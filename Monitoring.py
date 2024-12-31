@@ -12,16 +12,20 @@ from pandas.api.types import (
 
 import matplotlib.pyplot as plt
 
+import requests
+
+
 
 # =============================================================================
 # 
-# General supporting
+# General supporting functions
 # 
 # =============================================================================
 
 # function to convert Excel-time to normal time
 def excel_float_to_datetime(excel_float):
     return (datetime(1899, 12, 30) + timedelta(days=excel_float)).date()
+
 
 
 # function to generate a filtering-enable dataframe
@@ -104,6 +108,38 @@ def filter_dataframe(df : pd.DataFrame, checkbox_name : str) -> pd.DataFrame:
 
 
 
+# function to get file URLs from a GitHub repository
+def get_github_file_url(repo_owner, repo_name, branch, file_name):
+    api_url = f'https://api.github.com/repos/{repo_owner}/{repo_name}/git/trees/{branch}?recursive=1'
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        tree = response.json().get('tree', [])
+        file_urls = [f'https://raw.githubusercontent.com/{repo_owner}/{repo_name}/{branch}/{file["path"]}' for file in tree if file['type'] == 'blob']
+        
+        # return file_urls
+        for url in file_urls:
+            if file_name in url:
+                return url
+            
+        print('Cannot find the url for ', file_name, '.')
+        return []
+        
+    else:
+        print('Failed to fetch files from GitHub.')
+        return []
+
+# =============================================================================
+# repo_owner = 'chitn'
+# repo_name = 'trial'
+# branch = 'main'
+# file_name = 'pcb012a_2450 VN.xlsb'
+# 
+# file_url = get_github_file_url(repo_owner, repo_name, branch, file_name)
+# print(file_url)
+# =============================================================================
+      
+
+
 # =============================================================================
 # 
 # Processing data from pcb012
@@ -132,8 +168,16 @@ class xlsb_file:
         # This function reads the xlsb file and does some cleaning works
         # =====================================================================
 
-        # Read xlsb file
-        df = pd.read_excel(file_name, engine = 'pyxlsb', sheet_name = 'Report')
+        # # Read xlsb file - locally
+        # df = pd.read_excel(file_name, engine = 'pyxlsb', sheet_name = 'Report')
+        
+        # Read xlsb file - github
+        repo_owner = 'chitn'
+        repo_name = 'trial'
+        branch = 'main'
+        
+        df = pd.read_excel(get_github_file_url(repo_owner, repo_name, branch, file_name), 
+                           engine = 'pyxlsb', sheet_name = 'Report')
         
         # Set name for columns
         df.columns = ["Type",                  # 0
@@ -539,8 +583,9 @@ class streaming:
             # Create a DataFrame from the input data
             for rate, suffix in zip(rates, suffices):
                 if rate != 0:
-                    name = base_name + " " + suffix + ".xlsb"  
+                    name = base_name + "_" + suffix + ".xlsb"  
                     try:
+                        # st.write(get_github_file_url('chitn', 'trial', 'main', name))                        
                         new = xlsb_file(name, suffix, rate / xrate)
                         tmp = pd.concat([tmp, new.data], 
                                         ignore_index = True, 
@@ -1004,6 +1049,5 @@ class streaming:
 # 
 # =============================================================================
 trial = streaming()
-
 
 
