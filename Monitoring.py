@@ -509,7 +509,7 @@ class streaming:
                 
         # Initialise a page
         st.set_page_config(layout="wide")
-        st.title("Streamlit | Performance of Maritime Vietnam AG @ ctn")
+        st.title("Streamlit | Financial performance of Maritime Vietnam AG")
                 
         if 'source' not in st.session_state:
             st.session_state.source = pd.DataFrame()
