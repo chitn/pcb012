@@ -1,12 +1,19 @@
+import socket
+import requests
+
 import streamlit as st
+
 import pandas as pd
+
 from pandas.api.types import (
     is_categorical_dtype,
     is_datetime64_any_dtype,
     is_numeric_dtype,
     is_object_dtype,
 )
+
 from datetime import datetime, timedelta
+
 import matplotlib.pyplot as plt
 
 
@@ -175,27 +182,25 @@ class xlsb_file:
         # This function reads the xlsb file and does some cleaning works
         # =====================================================================
 
-# =============================================================================
-#         if is_running_locally():
-#             # Read xlsb file - locally
-#             print('Running local.') 
-#         else:
-#             # Read xlsb file - github
-#             repo_owner = 'chitn'
-#             repo_name = 'trial'
-#             branch = 'main'            
-#             file_name = get_github_file_url(repo_owner, repo_name, branch, file_name)
-#             print('Running online.') 
-# =============================================================================
-           
+        """
+        if is_running_locally():
+            # Read xlsb file - locally
+            print('Running local.') 
+        else:
+            # Read xlsb file - github
+            repo_owner = 'chitn'
+            repo_name = 'trial'
+            branch = 'main'            
+            file_name = get_github_file_url(repo_owner, repo_name, branch, file_name)
+            print('Running online.') 
+        """
+        
         repo_owner = 'chitn'
         repo_name = 'trial'
         branch = 'main'            
         file_name = get_github_file_url(repo_owner, repo_name, branch, file_name)
-        st.write(file_name)
         df = pd.read_excel(file_name, engine = 'pyxlsb', sheet_name = 'Report')
-        st.write('Read successfully...')
-        st.write(df.head())    
+            
                 
         # Set name for columns
         df.columns = ["Type",                  # 0
