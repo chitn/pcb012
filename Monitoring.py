@@ -127,7 +127,7 @@ def get_github_file_url(repo_owner, repo_name, branch, file_name):
         return []
         
     else:
-        st.write('Failed to fetch files from GitHub.')
+        st.write('Failed to fetch ', file_name, ' from GitHub.')
         return []
 
 # =============================================================================
