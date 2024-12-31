@@ -1,4 +1,3 @@
-socket
 streamlit
 pandas
 datetime
