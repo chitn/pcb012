@@ -183,17 +183,23 @@ class xlsb_file:
         # This function reads the xlsb file and does some cleaning works
         # =====================================================================
 
-        if is_running_locally():
-            # Read xlsb file - locally
-            print('Running local.') 
-        else:
-            # Read xlsb file - github
-            repo_owner = 'chitn'
-            repo_name = 'trial'
-            branch = 'main'            
-            file_name = get_github_file_url(repo_owner, repo_name, branch, file_name)
-            print('Running online.') 
-            
+# =============================================================================
+#         if is_running_locally():
+#             # Read xlsb file - locally
+#             print('Running local.') 
+#         else:
+#             # Read xlsb file - github
+#             repo_owner = 'chitn'
+#             repo_name = 'trial'
+#             branch = 'main'            
+#             file_name = get_github_file_url(repo_owner, repo_name, branch, file_name)
+#             print('Running online.') 
+# =============================================================================
+           
+        repo_owner = 'chitn'
+        repo_name = 'trial'
+        branch = 'main'            
+        file_name = get_github_file_url(repo_owner, repo_name, branch, file_name)
         df = pd.read_excel(file_name, engine = 'pyxlsb', sheet_name = 'Report')
             
                 
