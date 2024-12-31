@@ -151,6 +151,7 @@ def get_github_file_url(repo_owner, repo_name, branch, file_name):
 def is_running_locally():
     hostname = socket.gethostname()
     local_ip = socket.gethostbyname(hostname)
+    st.write(hostname, ' ', local_ip)
     return local_ip.startswith('127.') or local_ip.startswith('192.168.')
 
 
