@@ -1,4 +1,7 @@
-pandas
+requests
+os
+socket
 streamlit
+pandas
 datetime
 matplotlib
