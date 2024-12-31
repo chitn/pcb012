@@ -184,13 +184,14 @@ class xlsb_file:
 
         if is_running_locally():
             # Read xlsb file - locally
-            print('Running local.') 
+            st.write('Running local.') 
         else:
             # Read xlsb file - github
             repo_owner = 'chitn'
             repo_name = 'trial'
             branch = 'main'            
             file_name = get_github_file_url(repo_owner, repo_name, branch, file_name)
+            st.write('Running online.') 
             
         df = pd.read_excel(file_name, engine = 'pyxlsb', sheet_name = 'Report')
             
@@ -569,20 +570,20 @@ class streaming:
                                          ['pcb012a_2450'],
                                          key='name', index=0)
             with colb:
-                xrate = st.number_input('Currency shown in EUR, EUR to VND:', 
+                xrate = st.number_input('Shown in EUR|Rate:', 
                                         key='base', value=26600)                
             with col1:
                 rates[0] = st.number_input('VN|VND 1.00', key='rate_vn', value=1)
             with col2:
-                rates[1] = st.number_input('NL|EUR to VND: 26,600', key='rate_nl', value=26600)
+                rates[1] = st.number_input('NL|EUR->VND: 26,600', key='rate_nl', value=26600)
             with col3:
-                rates[2] = st.number_input('UK|GBP to VND: 32,000', key='rate_uk', value=32000)
+                rates[2] = st.number_input('UK|GBP->VND: 32,000', key='rate_uk', value=32000)
             with col4:
-                rates[3] = st.number_input('SG|SGD to VND: 18,750', key='rate_sg', value=18750)
+                rates[3] = st.number_input('SG|SGD->VND: 18,750', key='rate_sg', value=18750)
             with col5:
-                rates[4] = st.number_input('PH|PHP to VND: 440', key='rate_ph', value=440)
+                rates[4] = st.number_input('PH|PHP->VND: 440', key='rate_ph', value=440)
             with col6:
-                rates[5] = st.number_input('ML|MYR to VND: 5,700', key='rate_ml', value=5700) 
+                rates[5] = st.number_input('ML|MYR->VND: 5,700', key='rate_ml', value=5700) 
                 
             submit_button = st.form_submit_button(label = "Submit")
             
@@ -708,7 +709,7 @@ class streaming:
                     ax.bar(df_plot['WO'], df_plot['Workload_firm'], label=df_plot['WO'])
                     ax.grid(color='gray', linestyle='dashed')
                     plt.xticks(rotation=incline)
-                    plt.ylabel('Worload remaining [selected currency]')
+                    plt.ylabel('Worload remaining [EUR]')
                     
                     # Display the bar chart in Streamlit
                     st.pyplot(fig)
@@ -722,7 +723,7 @@ class streaming:
                     ax.bar(df_plot['WO'], df_plot['Outstanding_inv'], label=df_plot['WO'])
                     ax.grid(color='gray', linestyle='dashed')
                     plt.xticks(rotation=incline)
-                    plt.ylabel('Amount [selected currency]')
+                    plt.ylabel('Amount [EUR]')
                     
                     # Display the bar chart in Streamlit
                     st.pyplot(fig)
@@ -762,7 +763,7 @@ class streaming:
                     ax.set_yscale("log")
                     ax.set_ylim(10**2,2*10**6)
                     plt.xticks(rotation=incline)
-                    plt.ylabel('Cost budgetted [selected currency]')
+                    plt.ylabel('Cost budgetted [EUR]')
                     
                     # Display the bar chart in Streamlit
                     st.pyplot(fig)
@@ -778,7 +779,7 @@ class streaming:
                     ax.set_yscale("log")
                     ax.set_ylim(10**2,2*10**6)
                     plt.xticks(rotation=incline)
-                    plt.ylabel('Cost to-date [selected currency]')
+                    plt.ylabel('Cost to-date [EUR]')
                     
                     # Display the bar chart in Streamlit
                     st.pyplot(fig)
@@ -794,7 +795,7 @@ class streaming:
                     ax.set_yscale("log")
                     ax.set_ylim(10**2,2*10**6)
                     plt.xticks(rotation=incline)
-                    plt.ylabel('Contingency [selected currency]')
+                    plt.ylabel('Contingency [EUR]')
                     
                     # Display the bar chart in Streamlit
                     st.pyplot(fig)
@@ -848,7 +849,7 @@ class streaming:
                     ax.set_yscale("log")
                     ax.set_ylim(10**2,2*10**6)
                     plt.xticks(rotation=incline)
-                    plt.ylabel('Cost budgetted [selected currency]')
+                    plt.ylabel('Cost budgetted [EUR]')
                     
                     # Display the bar chart in Streamlit
                     st.pyplot(fig)
@@ -864,7 +865,7 @@ class streaming:
                     ax.set_yscale("log")
                     ax.set_ylim(10**2,2*10**6)
                     plt.xticks(rotation=incline)
-                    plt.ylabel('Cost to-date [selected currency]')
+                    plt.ylabel('Cost to-date [EUR]')
                     
                     # Display the bar chart in Streamlit
                     st.pyplot(fig)
@@ -880,7 +881,7 @@ class streaming:
                     ax.set_yscale("log")
                     ax.set_ylim(10**2,2*10**6)
                     plt.xticks(rotation=incline)
-                    plt.ylabel('Contingency [selected currency]')
+                    plt.ylabel('Contingency [EUR]')
                     
                     # Display the bar chart in Streamlit
                     st.pyplot(fig)
@@ -932,7 +933,7 @@ class streaming:
                     ax.set_yscale("log")
                     ax.set_ylim(10,5*10**5)
                     plt.xticks(rotation=incline)
-                    plt.ylabel('POSITIVE Result this month [selected currency]')
+                    plt.ylabel('POSITIVE Result this month [EUR]')
                     
                     # Display the bar chart in Streamlit
                     st.pyplot(fig)
@@ -948,7 +949,7 @@ class streaming:
                     ax.set_yscale("log")
                     ax.set_ylim(10,5*10**5)
                     plt.xticks(rotation=incline)
-                    plt.ylabel('POSITIVE Result to-date [selected currency]')
+                    plt.ylabel('POSITIVE Result to-date [EUR]')
                     
                     # Display the bar chart in Streamlit
                     st.pyplot(fig)
@@ -964,7 +965,7 @@ class streaming:
                     ax.set_yscale("log")
                     ax.set_ylim(10,5*10**5)
                     plt.xticks(rotation=incline)
-                    plt.ylabel('POSITIVE Result forcasted [selected currency]')
+                    plt.ylabel('POSITIVE Result forcasted [EUR]')
                     
                     # Display the bar chart in Streamlit
                     st.pyplot(fig)
@@ -996,7 +997,7 @@ class streaming:
                     ax.set_yscale("log")
                     ax.set_ylim(10,5*10**5)
                     plt.xticks(rotation=incline)
-                    plt.ylabel('NEGATIVE Result this month [selected currency]')
+                    plt.ylabel('NEGATIVE Result this month [EUR]')
                     
                     # Display the bar chart in Streamlit
                     st.pyplot(fig)
@@ -1012,7 +1013,7 @@ class streaming:
                     ax.set_yscale("log")
                     ax.set_ylim(10,5*10**5)
                     plt.xticks(rotation=incline)
-                    plt.ylabel('NEGATIVE Result to-date [selected currency]')
+                    plt.ylabel('NEGATIVE Result to-date [EUR]')
                     
                     # Display the bar chart in Streamlit
                     st.pyplot(fig)
@@ -1028,7 +1029,7 @@ class streaming:
                     ax.set_yscale("log")
                     ax.set_ylim(10,5*10**5)
                     plt.xticks(rotation=incline)
-                    plt.ylabel('NEGATIVE Result forcasted [selected currency]')
+                    plt.ylabel('NEGATIVE Result forcasted [EUR]')
                     
                     # Display the bar chart in Streamlit
                     st.pyplot(fig)
