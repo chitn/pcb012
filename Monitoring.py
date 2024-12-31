@@ -199,10 +199,10 @@ class xlsb_file:
         repo_name = 'trial'
         branch = 'main'            
         file_name = get_github_file_url(repo_owner, repo_name, branch, file_name)
-        st.write(file_name)
+        # st.write(file_name)
         
         df = pd.read_excel(file_name, engine = 'pyxlsb', sheet_name = 'Report')
-        st.write('Done loading ', file_name)    
+        # st.write('Done loading ', file_name)   
                 
         # Set name for columns
         df.columns = ["Type",                  # 0
@@ -572,26 +572,24 @@ class streaming:
         with st.form(key='pcb012'):
             suffices = ['VN', 'NL', 'UK', 'SG', 'PH', 'ML']
             rates = [0] * 6
-            cola, colb, col1, col2, col3, col4, col5, col6 = st.columns(8) 
-            with cola:
-                base_name = st.selectbox('Base pcb012 name', 
-                                         ['pcb012a_2450'],
-                                         key='name', index=0)
-            with colb:
-                xrate = st.number_input('Shown in EUR|Rate:', 
-                                        key='base', value=26600)                
+            col1, col2, col3, col4, col5, col6 = st.columns(6) 
             with col1:
-                rates[0] = st.number_input('VN|VND 1.00', key='rate_vn', value=1)
+                base_name = st.selectbox('Base pcb012 name', 
+                                         ['pcb012a_2450','pcb012a_2451','pcb012a_2452'],
+                                         key='name', index=0)
             with col2:
-                rates[1] = st.number_input('NL|EUR->VND: 26,600', key='rate_nl', value=26600)
+                xrate = st.number_input('SHOWN IN EUR | EUR->VND:', 
+                                        key='base', value=26600)           
+                rates[0] = 1.0
+                rates[1] = xrate
             with col3:
-                rates[2] = st.number_input('UK|GBP->VND: 32,000', key='rate_uk', value=32000)
+                rates[2] = st.number_input('UK | GBP->VND: 32,000', key='rate_uk', value=32000)
             with col4:
-                rates[3] = st.number_input('SG|SGD->VND: 18,750', key='rate_sg', value=18750)
+                rates[3] = st.number_input('SG | SGD->VND: 18,750', key='rate_sg', value=18750)
             with col5:
-                rates[4] = st.number_input('PH|PHP->VND: 440', key='rate_ph', value=440)
+                rates[4] = st.number_input('PH | PHP->VND: 440', key='rate_ph', value=440)
             with col6:
-                rates[5] = st.number_input('ML|MYR->VND: 5,700', key='rate_ml', value=5700) 
+                rates[5] = st.number_input('ML | MYR->VND: 5,700', key='rate_ml', value=5700) 
                 
             submit_button = st.form_submit_button(label = "Submit")
             
