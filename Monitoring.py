@@ -151,7 +151,7 @@ def get_github_file_url(repo_owner, repo_name, branch, file_name):
 def is_running_locally():
     hostname = socket.gethostname()
     local_ip = socket.gethostbyname(hostname)
-    st.write(hostname, ' ', local_ip)
+    print(hostname, ' ', local_ip)
     return local_ip.startswith('127.') or local_ip.startswith('192.168.')
 
 
@@ -185,14 +185,14 @@ class xlsb_file:
 
         if is_running_locally():
             # Read xlsb file - locally
-            st.write('Running local.') 
+            print('Running local.') 
         else:
             # Read xlsb file - github
             repo_owner = 'chitn'
             repo_name = 'trial'
             branch = 'main'            
             file_name = get_github_file_url(repo_owner, repo_name, branch, file_name)
-            st.write('Running online.') 
+            print('Running online.') 
             
         df = pd.read_excel(file_name, engine = 'pyxlsb', sheet_name = 'Report')
             
