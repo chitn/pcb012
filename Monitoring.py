@@ -1,7 +1,10 @@
-import pandas as pd
+import requests
+import os
+import socket
+
 import streamlit as st
 
-from datetime import datetime, timedelta
+import pandas as pd
 
 from pandas.api.types import (
     is_categorical_dtype,
@@ -10,9 +13,9 @@ from pandas.api.types import (
     is_object_dtype,
 )
 
-import matplotlib.pyplot as plt
+from datetime import datetime, timedelta
 
-import requests
+import matplotlib.pyplot as plt
 
 
 
@@ -132,12 +135,23 @@ def get_github_file_url(repo_owner, repo_name, branch, file_name):
 # repo_owner = 'chitn'
 # repo_name = 'trial'
 # branch = 'main'
-# file_name = 'pcb012a_2450 VN.xlsb'
+# file_name = 'pcb012a_2450_VN.xlsb'
 # 
 # file_url = get_github_file_url(repo_owner, repo_name, branch, file_name)
 # print(file_url)
 # =============================================================================
       
+
+
+# function to check if Streamlit app is running locally or online, 
+# by using os and socket libraries to determine the environment
+# If the IP address of the machine running the app starts with 
+# 127. or 192.168., it is likely running locally. 
+# Otherwise, it is running online.
+def is_running_locally():
+    hostname = socket.gethostname()
+    local_ip = socket.gethostbyname(hostname)
+    return local_ip.startswith('127.') or local_ip.startswith('192.168.')
 
 
 # =============================================================================
@@ -168,17 +182,19 @@ class xlsb_file:
         # This function reads the xlsb file and does some cleaning works
         # =====================================================================
 
-        # # Read xlsb file - locally
-        # df = pd.read_excel(file_name, engine = 'pyxlsb', sheet_name = 'Report')
-        
-        # Read xlsb file - github
-        repo_owner = 'chitn'
-        repo_name = 'trial'
-        branch = 'main'
-        
-        df = pd.read_excel(get_github_file_url(repo_owner, repo_name, branch, file_name), 
-                           engine = 'pyxlsb', sheet_name = 'Report')
-        
+        if is_running_locally():
+            # Read xlsb file - locally
+            print('Running local.') 
+        else:
+            # Read xlsb file - github
+            repo_owner = 'chitn'
+            repo_name = 'trial'
+            branch = 'main'            
+            file_name = get_github_file_url(repo_owner, repo_name, branch, file_name)
+            
+        df = pd.read_excel(file_name, engine = 'pyxlsb', sheet_name = 'Report')
+            
+                
         # Set name for columns
         df.columns = ["Type",                  # 0
                       "WO",                    # 1
@@ -545,22 +561,16 @@ class streaming:
     def input_form(self):
         # Create a form
         with st.form(key='pcb012'):
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                base_name = st.text_input('Base pcb012 name', key='name',
-                                          value='pcb012a_2451')
-            with col2:
-                currency = st.selectbox('Currency to show',
-                                        ['VND', 'EUR', 'USD'], 
-                                        key='currency', index=1)
-            with col3:
-                xrate = st.number_input('Rate to VND', 
-                                        key='base', value=26600)
-            
-            
             suffices = ['VN', 'NL', 'UK', 'SG', 'PH', 'ML']
             rates = [0] * 6
-            col1, col2, col3, col4, col5, col6 = st.columns(6) 
+            cola, colb, col1, col2, col3, col4, col5, col6 = st.columns(8) 
+            with cola:
+                base_name = st.selectbox('Base pcb012 name', 
+                                         ['pcb012a_2450'],
+                                         key='name', index=0)
+            with colb:
+                xrate = st.number_input('Currency shown in EUR, EUR to VND:', 
+                                        key='base', value=26600)                
             with col1:
                 rates[0] = st.number_input('VN|VND 1.00', key='rate_vn', value=1)
             with col2:
@@ -638,13 +648,7 @@ class streaming:
                 filter_df = filter_dataframe(data[columns], "Filters for Info")
                 st.dataframe(filter_df)
                 
-                st.header("Some statistics for Vietnam entity...")
-                
-                st.subheader("on customers...")
-                
-                st.subheader("on projects...")
-                
-                st.subheader("on proposals...")
+                st.header("Some statistics for Vietnam entity: to be updated")
             
             
         with tab_cnc:             
@@ -653,12 +657,12 @@ class streaming:
             if data.shape[0] == 0:
                 st.write('Need to load data first...')
             else:
-                columns = ["Entity", "PM_MP", "Type", "WO", "Description", 
+                columns = ["PM_MP", "Entity", "WO", "Description", 
                            "Contract_2d_invoiced", "Contract_2d_total", "Contract_budget", 
                            "Cost_2d_total", "Cost_budget_total", "Cost_4cast_total", 
                            "WIP_gross", "WIP_net", 
                            "Outstanding_inv", "Inv_oldest_unpaid", "Inv_most_recent", "Inv_base", "Inv_cost", 
-                           "Ratio_spent %", "Workload_firm" ]
+                           "Ratio_spent %", "Workload_firm", "Type"]
                 
                 filter_df = filter_dataframe(data[columns], "Filters for Contract & Cost")
                 filter_df = filter_df[filter_df['Type'] == 'MP']
@@ -731,13 +735,13 @@ class streaming:
             if data.shape[0] == 0:
                 st.write('Need to load data first...')
             else:
-                columns = ["Entity", "PM_MP", "Type", "WO", "Description",  
+                columns = ["PM_MP", "Entity", "WO", "Description",  
                            "Cost_2d_total", "Cost_2d_txt", "Cost_2d_subcon", "Cost_2d_others", 
                            "Cost_budget_total", "Cost_budget_txt", "Cost_budget_subcon", "Cost_budget_contin", "Cost_budget_others", 
                            "Cost_4cast_total", "Cost_4cast_txt", "Cost_4cast_subcon", "Cost_4cast_contin", "Cost_4cast_others", 
                            "4cast_change_pr", "4cast_change_contin", 
                            "Ratio_invoiced %", "Ratio_spent %", "Ratio_txt %",  
-                           "Date_budget", "Date_4cast"]
+                           "Date_budget", "Date_4cast", "Type"]
                 
                 filter_df = filter_dataframe(data[columns], "Filters for Contract & Cost - PR")
                 filter_df = filter_df[filter_df['Type'] == 'PR']
@@ -817,13 +821,13 @@ class streaming:
             if data.shape[0] == 0:
                 st.write('Need to load data first...')
             else:
-                columns = ["Entity", "PM_MP", "Type", "WO", "Description",  
+                columns = ["PM_MP", "Entity", "WO", "Description",  
                            "Cost_2d_total", "Cost_2d_txt", "Cost_2d_subcon", "Cost_2d_others", 
                            "Cost_budget_total", "Cost_budget_txt", "Cost_budget_subcon", "Cost_budget_contin", "Cost_budget_others", 
                            "Cost_4cast_total", "Cost_4cast_txt", "Cost_4cast_subcon", "Cost_4cast_contin", "Cost_4cast_others", 
                            "4cast_change_contin", 
                            "Ratio_invoiced %", "Ratio_spent %", "Ratio_txt %",  
-                           "Date_budget", "Date_4cast"]
+                           "Date_budget", "Date_4cast", "Type"]
                 
                 filter_df = filter_dataframe(data[columns], "Filters for Contract & Cost - WO")
                 filter_df = filter_df[filter_df['Type'] == 'WO']
@@ -904,10 +908,10 @@ class streaming:
             if data.shape[0] == 0:
                 st.write('Need to load data first...')
             else:
-                columns = ["Entity", "PM_MP", "Type", "WO", "Description", 
+                columns = ["PM_MP", "Entity", "WO", "Description", 
                            "PR_month", "PR_year", "PR_2date", "PR_net_year", "PR_net_2date", 
                            "PR_budgeted_selling", 
-                           "PR_4casted", "PR_4casted_execution", "4cast_change_pr"]
+                           "PR_4casted", "PR_4casted_execution", "4cast_change_pr", "Type"]
                 
                 filter_df = filter_dataframe(data[columns], "Filters for Project results")
                 filter_df = filter_df[filter_df['Type'] == 'MP']
