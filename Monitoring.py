@@ -123,11 +123,11 @@ def get_github_file_url(repo_owner, repo_name, branch, file_name):
             if file_name in url:
                 return url
             
-        print('Cannot find the url for ', file_name, '.')
+        st.write('Cannot find the url for ', file_name, '.')
         return []
         
     else:
-        print('Failed to fetch files from GitHub.')
+        st.write('Failed to fetch files from GitHub.')
         return []
 
 # =============================================================================
