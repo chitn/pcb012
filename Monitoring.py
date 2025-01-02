@@ -576,7 +576,7 @@ class streaming:
             with col1:
                 base_name = st.selectbox('Base pcb012 name', 
                                          ['pcb012a_2450','pcb012a_2451','pcb012a_2452'],
-                                         key='name', index=0)
+                                         key='name', index=2)
             with col2:
                 xrate = st.number_input('SHOWN IN EUR | EUR->VND:', 
                                         key='base', value=26600)           
