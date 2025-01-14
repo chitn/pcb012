@@ -141,7 +141,7 @@ def get_github_list_data_file(repo_owner, repo_name, branch):
         file_urls = [f'https://raw.githubusercontent.com/{repo_owner}/{repo_name}/{branch}/{file["path"]}' for file in tree if file['type'] == 'blob']
         # print(file_urls)
         
-        to_check = [str(i) for i in range(2401,2453)]
+        to_check = [str(i) for i in range(2401,2553)]
         # print(to_check)
         
         available = []
