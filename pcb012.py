@@ -546,7 +546,7 @@ class streaming:
                 
         # Initialise a page
         st.set_page_config(layout="wide")
-        st.title("Financial performance of Maritime Vietnam AG")
+        st.title("Visualisation of pcb012 | Maritime Vietnam AG")
                 
         if 'source' not in st.session_state:
             st.session_state.source = pd.DataFrame()
