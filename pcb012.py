@@ -546,7 +546,7 @@ class streaming:
                 
         # Initialise a page
         st.set_page_config(layout="wide")
-        st.title("Streamlit | Financial performance of Maritime Vietnam AG")
+        st.title("Financial performance of Maritime Vietnam AG")
                 
         if 'source' not in st.session_state:
             st.session_state.source = pd.DataFrame()
@@ -669,11 +669,12 @@ class streaming:
 
     def online(self):            
         # Define tabs for pcb012
-        tab_info, tab_cnc, tab_pr, tab_wo, tab_result = st.tabs(["012 | Info",
-                                                                 "012 | Contract & Cost",
-                                                                 "012 | Contract & Cost - PR",
-                                                                 "012 | Contract & Cost - WO",
-                                                                 "012 | Project results"])
+        tab_info, tab_cnc, tab_pr, tab_wo, tab_result, tab_all = st.tabs(["012 | Info",
+                                                                          "012 | Contract & Cost",
+                                                                          "012 | Contract & Cost - PR",
+                                                                          "012 | Contract & Cost - WO",
+                                                                          "012 | Project results",
+                                                                          "012 | All"])
                 
         incline = 75
         top = 20
@@ -773,7 +774,7 @@ class streaming:
             
                     
                     # tabular statistics                      
-                    texts = ["Entity", "# PnPs", "# WOs", "# customers", "Contract budget", "Contract invoiced", "Workload remained", "Outstanding invoice"]
+                    texts = ["Entity", "# PnPs", "# WOs", "# Cust.", "Contract budget", "Contract invoiced", "Workload remained", "Outs. invoice"]
                     cols = st.columns([1, 1, 1, 1, 2, 2, 2, 2])
                     for j in range(8):
                         with cols[j]:
@@ -802,6 +803,7 @@ class streaming:
                 filter_df = filter_df[filter_df['Type'] == 'MP']
                 st.dataframe(filter_df)
                 
+                # =============================================================
                 st.subheader("Contract & Cost | Master projects")
                 
                 col1, col2, col3, col4 = st.columns(4)
@@ -869,9 +871,9 @@ class streaming:
                 
                 if len(pms) > 0:
                     
-                    texts = ["PM", "# PnPs", "Contract budget", "Contract invoiced", "Work in progress", "Workload remained", "Outstanding invoice"]
-                    cols = st.columns([1, 1, 2, 2, 2, 2, 2])
-                    for j in range(7):
+                    texts = ["PM", "# PnPs", "WIP", "Workload remained", "Contract budget", "Contract invoiced", "Cost to-date", "Out. invoice"]
+                    cols = st.columns([2, 1, 1, 2, 1.5, 1.5, 1.5, 1.5])
+                    for j in range(8):
                         with cols[j]:
                             st.markdown(f"<div style='font-size:20px;font-weight:bold;'><strong>{texts[j]}</strong></div>", unsafe_allow_html=True)
                                                                     
@@ -883,15 +885,16 @@ class streaming:
                         numb_customer = 0
                         contract_budget = "{:,.0f}".format(filter_df[filter_df["PM_MP"] == pm]["Contract_budget"].sum())
                         contract_invoiced = "{:,.0f}".format(filter_df[filter_df["PM_MP"] == pm]["Contract_2d_invoiced"].sum())
+                        cost_2d = "{:,.0f}".format(filter_df[filter_df["PM_MP"] == pm]["Cost_2d_total"].sum())
                         wip_gross = "{:,.0f}".format(filter_df[filter_df["PM_MP"] == pm]["WIP_gross"].sum())
                         workload = "{:,.0f}".format(filter_df[filter_df["PM_MP"] == pm]["Workload_firm"].sum())
                         outstanding = "{:,.0f}".format(filter_df[filter_df["PM_MP"] == pm]["Outstanding_inv"].sum())
                     
-                        initials = ''.join([word[0] for word in pm.split()[:-1]]) + '. ' + pm.split()[-1]
-                        stat = [initials, numb_mp, contract_budget, contract_invoiced, wip_gross, workload, outstanding]
+                        initials = pm # ''.join([word[0] for word in pm.split()[:-1]]) + '. ' + pm.split()[-1]
+                        stat = [initials, numb_mp, wip_gross, workload, contract_budget, contract_invoiced, cost_2d, outstanding]
                                                 
-                        cols = st.columns([1, 1, 2, 2, 2, 2, 2])
-                        for j in range(7): 
+                        cols = st.columns([2, 1, 1, 2, 1.5, 1.5, 1.5, 1.5])
+                        for j in range(8): 
                             with cols[j]:
                                 st.markdown(f"<div style='font-size:16px;'><strong>{stat[j]}</strong></div>", unsafe_allow_html=True)
                     
@@ -915,6 +918,7 @@ class streaming:
                 filter_df = filter_df[filter_df['Type'] == 'PR']
                 st.dataframe(filter_df)
                 
+                # =============================================================
                 st.header("Contract & Cost | Projects")
                 
                 col1, col2, col3, col4 = st.columns(4)  
@@ -981,6 +985,37 @@ class streaming:
                     
                     # Display the bar chart in Streamlit
                     st.pyplot(fig)
+                    
+            
+                # =============================================================
+                st.subheader("Statistics...")
+                
+                pms = filter_df["PM_MP"].unique()
+                
+                if len(pms) > 0:                    
+                    texts = ["PM", "# PnPs", "Cost to-date", "Cost budget", "Budget cont.", "Budget subcon", "Cost 4cast", "4cast cont."]
+                    cols = st.columns([2, 1, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5])
+                    for j in range(8):
+                        with cols[j]:
+                            st.markdown(f"<div style='font-size:20px;font-weight:bold;'><strong>{texts[j]}</strong></div>", unsafe_allow_html=True)
+                                                                    
+                    for pm in pms:
+                        numb_pr = filter_df[(filter_df["PM_MP"] == pm) &
+                                            (filter_df["Type"] == "PR")]["Type"].count()
+                        cost_2d = "{:,.0f}".format(filter_df[filter_df["PM_MP"] == pm]["Cost_2d_total"].sum())
+                        cost_budget = "{:,.0f}".format(filter_df[filter_df["PM_MP"] == pm]["Cost_budget_total"].sum())
+                        cost_4cast = "{:,.0f}".format(filter_df[filter_df["PM_MP"] == pm]["Cost_4cast_total"].sum())
+                        budget_contin = "{:,.0f}".format(filter_df[filter_df["PM_MP"] == pm]["Cost_budget_contin"].sum())
+                        budget_subcon = "{:,.0f}".format(filter_df[filter_df["PM_MP"] == pm]["Cost_budget_subcon"].sum())
+                        forecast_contin = "{:,.0f}".format(filter_df[filter_df["PM_MP"] == pm]["Cost_4cast_contin"].sum())
+                    
+                        initials = pm # ''.join([word[0] for word in pm.split()[:-1]]) + '. ' + pm.split()[-1]
+                        stat = [initials, numb_pr, cost_2d, cost_budget, budget_contin, budget_subcon, cost_4cast, forecast_contin]
+                                                
+                        cols = st.columns([2, 1, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5])
+                        for j in range(8): 
+                            with cols[j]:
+                                st.markdown(f"<div style='font-size:16px;'><strong>{stat[j]}</strong></div>", unsafe_allow_html=True)
         
         
         with tab_wo:            
@@ -1001,6 +1036,7 @@ class streaming:
                 filter_df = filter_df[filter_df['Type'] == 'WO']
                 st.dataframe(filter_df)
                 
+                # =============================================================
                 st.header("Contract & Cost | Workorders")
                 
                 col1, col2, col3, col4 = st.columns(4)  
@@ -1067,6 +1103,37 @@ class streaming:
                     
                     # Display the bar chart in Streamlit
                     st.pyplot(fig)
+                    
+            
+                # =============================================================
+                st.subheader("Statistics...")
+                
+                pms = filter_df["PM_MP"].unique()
+                
+                if len(pms) > 0:                    
+                    texts = ["PM", "# PnPs", "Cost to-date", "Cost budget", "Budget cont.", "Budget subcon", "Cost 4cast", "4cast cont."]
+                    cols = st.columns([2, 1, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5])
+                    for j in range(8):
+                        with cols[j]:
+                            st.markdown(f"<div style='font-size:20px;font-weight:bold;'><strong>{texts[j]}</strong></div>", unsafe_allow_html=True)
+                                                                    
+                    for pm in pms:
+                        numb_wo = filter_df[(filter_df["PM_MP"] == pm) &
+                                            (filter_df["Type"] == "WO")]["Type"].count()
+                        cost_2d = "{:,.0f}".format(filter_df[filter_df["PM_MP"] == pm]["Cost_2d_total"].sum())
+                        cost_budget = "{:,.0f}".format(filter_df[filter_df["PM_MP"] == pm]["Cost_budget_total"].sum())
+                        cost_4cast = "{:,.0f}".format(filter_df[filter_df["PM_MP"] == pm]["Cost_4cast_total"].sum())
+                        budget_contin = "{:,.0f}".format(filter_df[filter_df["PM_MP"] == pm]["Cost_budget_contin"].sum())
+                        budget_subcon = "{:,.0f}".format(filter_df[filter_df["PM_MP"] == pm]["Cost_budget_subcon"].sum())
+                        forecast_contin = "{:,.0f}".format(filter_df[filter_df["PM_MP"] == pm]["Cost_4cast_contin"].sum())
+                    
+                        initials = pm # ''.join([word[0] for word in pm.split()[:-1]]) + '. ' + pm.split()[-1]
+                        stat = [initials, numb_wo, cost_2d, cost_budget, budget_contin, budget_subcon, cost_4cast, forecast_contin]
+                                                
+                        cols = st.columns([2, 1, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5])
+                        for j in range(8): 
+                            with cols[j]:
+                                st.markdown(f"<div style='font-size:16px;'><strong>{stat[j]}</strong></div>", unsafe_allow_html=True)
             
             
             
@@ -1085,6 +1152,7 @@ class streaming:
                 filter_df = filter_df[filter_df['Type'] == 'MP']
                 st.dataframe(filter_df)
                 
+                # =============================================================
                 st.header("Project results")
                 
                 col1, col2, col3, col4 = st.columns(4)
@@ -1212,8 +1280,43 @@ class streaming:
                     
                     # Display the pie chart in Streamlit
                     st.pyplot(fig)
+                    
+            
+                # =============================================================
+                st.subheader("Statistics...")
+                
+                pms = filter_df["PM_MP"].unique()
+                
+                if len(pms) > 0:                        
+                    texts = ["PM", "# PnPs", "PR month", "PR year", "PR to-date", "PR 4cast"]
+                    cols = st.columns([2, 1, 1.5, 1.5, 1.5, 1.5])
+                    for j in range(6):
+                        with cols[j]:
+                            st.markdown(f"<div style='font-size:20px;font-weight:bold;'><strong>{texts[j]}</strong></div>", unsafe_allow_html=True)
+                                                                    
+                    for pm in pms:
+                        numb_mp = filter_df[(filter_df["PM_MP"] == pm) &
+                                            (filter_df["Type"] == "MP")]["Type"].count()
+                        pr_month = "{:,.0f}".format(filter_df[filter_df["PM_MP"] == pm]["PR_month"].sum())
+                        pr_year = "{:,.0f}".format(filter_df[filter_df["PM_MP"] == pm]["PR_year"].sum())
+                        pr_2date = "{:,.0f}".format(filter_df[filter_df["PM_MP"] == pm]["PR_2date"].sum())
+                        pr_4casted = "{:,.0f}".format(filter_df[filter_df["PM_MP"] == pm]["PR_4casted"].sum())
+                    
+                        initials = pm # ''.join([word[0] for word in pm.split()[:-1]]) + '. ' + pm.split()[-1]
+                        stat = [initials, numb_mp, pr_month, pr_year, pr_2date, pr_4casted]
+                                                
+                        cols = st.columns([2, 1, 1.5, 1.5, 1.5, 1.5])
+                        for j in range(6): 
+                            with cols[j]:
+                                st.markdown(f"<div style='font-size:16px;'><strong>{stat[j]}</strong></div>", unsafe_allow_html=True)
   
-    
+        with tab_all:
+            data = st.session_state.source
+            
+            if data.shape[0] == 0:
+                st.write('Need to load data first...')
+            else:
+                st.dataframe(data)
 
 # =============================================================================
 # 
